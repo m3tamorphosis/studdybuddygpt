@@ -1,0 +1,268 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 4 /Kids [3 0 R 5 0 R 7 0 R 9 0 R] >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 11 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1183 >>
+stream
+BT
+/F1 18 Tf
+50 780 Td
+(PC PARTS STUDY GUIDE) Tj
+0 -18 Td
+0 -22 Td
+/F1 14 Tf
+(Core Components) Tj
+/F1 12 Tf
+0 -16 Td
+/F1 12 Tf
+(- CPU: Executes instructions and performs calculations.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Motherboard: Connects and coordinates all hardware.) Tj
+0 -16 Td
+/F1 12 Tf
+(- RAM: Short-term working memory for active tasks.) Tj
+0 -16 Td
+/F1 12 Tf
+(- GPU: Renders graphics, video, and parallel workloads.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Storage: SSDs and HDDs hold the operating system and files.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Power Supply: Converts wall power into stable DC power.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Case: Houses components and manages airflow.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Cooling: Air coolers and liquid coolers remove heat.) Tj
+0 -18 Td
+0 -22 Td
+/F1 14 Tf
+(CPU Details) Tj
+/F1 12 Tf
+0 -16 Td
+/F1 12 Tf
+(- Clock speed affects how quickly cycles are processed.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Core count matters for multitasking and threaded apps.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Cache helps the CPU access frequent data faster.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Socket compatibility must match the motherboard.) Tj
+0 -16 Td
+/F1 12 Tf
+(- TDP indicates expected thermal output under load.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 11 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 995 >>
+stream
+BT
+/F1 18 Tf
+50 780 Td
+(Motherboard And Memory) Tj
+0 -18 Td
+0 -16 Td
+/F1 12 Tf
+(- Chipset determines platform features and I/O lanes.) Tj
+0 -16 Td
+/F1 12 Tf
+(- VRMs regulate power delivery to the CPU.) Tj
+0 -16 Td
+/F1 12 Tf
+(- DIMM slots hold desktop memory modules.) Tj
+0 -16 Td
+/F1 12 Tf
+(- PCIe slots connect GPUs, capture cards, and add-in cards.) Tj
+0 -16 Td
+/F1 12 Tf
+(- M.2 slots connect NVMe SSDs.) Tj
+0 -16 Td
+/F1 12 Tf
+(- SATA ports connect SATA SSDs and hard drives.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Rear I/O includes USB, audio, Ethernet, and video outputs.) Tj
+0 -18 Td
+0 -22 Td
+/F1 14 Tf
+(RAM Basics) Tj
+/F1 12 Tf
+0 -16 Td
+/F1 12 Tf
+(- Capacity affects how many tasks stay active without swapping.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Speed and timings influence latency and bandwidth.) Tj
+0 -16 Td
+/F1 12 Tf
+(- DDR4 and DDR5 are not interchangeable.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Dual-channel memory can improve performance.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Typical capacities are 16GB, 32GB, and 64GB.) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 11 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 1084 >>
+stream
+BT
+/F1 18 Tf
+50 780 Td
+(Graphics, Storage, And Power) Tj
+0 -18 Td
+0 -16 Td
+/F1 12 Tf
+(- Dedicated GPUs have their own VRAM.) Tj
+0 -16 Td
+/F1 12 Tf
+(- VRAM helps with textures, frame buffers, and AI workloads.) Tj
+0 -16 Td
+/F1 12 Tf
+(- PCIe power cables feed high-end graphics cards.) Tj
+0 -16 Td
+/F1 12 Tf
+(- NVMe SSDs are faster than SATA SSDs for many workloads.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Hard drives offer large capacity at lower cost.) Tj
+0 -16 Td
+/F1 12 Tf
+(- PSU wattage must cover peak system demand.) Tj
+0 -16 Td
+/F1 12 Tf
+(- 80 Plus ratings describe efficiency, not total quality.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Modular PSUs simplify cable management.) Tj
+0 -18 Td
+0 -22 Td
+/F1 14 Tf
+(Cooling And Airflow) Tj
+/F1 12 Tf
+0 -16 Td
+/F1 12 Tf
+(- Intake fans bring cool air into the case.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Exhaust fans push warm air out.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Thermal paste improves heat transfer to the cooler.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Positive pressure can help reduce dust entry.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Good airflow keeps temperatures and noise under control.) Tj
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 11 0 R >> >> /Contents 10 0 R >>
+endobj
+10 0 obj
+<< /Length 1278 >>
+stream
+BT
+/F1 18 Tf
+50 780 Td
+(More PC Parts And Accessories) Tj
+0 -18 Td
+0 -16 Td
+/F1 12 Tf
+(- CPU cooler backplate supports mounting pressure.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Case fans vary by size such as 120mm and 140mm.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Fan hubs and controllers manage several fans at once.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Sound cards improve specialized audio workflows.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Network cards add wired or wireless connectivity.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Capture cards record or stream console and PC video.) Tj
+0 -16 Td
+/F1 12 Tf
+(- RGB controllers sync lighting devices.) Tj
+0 -16 Td
+/F1 12 Tf
+(- UPS units protect systems from sudden power loss.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Monitors vary in size, refresh rate, resolution, and panel type.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Keyboards and mice affect comfort and input precision.) Tj
+0 -18 Td
+0 -22 Td
+/F1 14 Tf
+(Review Points) Tj
+/F1 12 Tf
+0 -16 Td
+/F1 12 Tf
+(- CPU, motherboard, and RAM must be platform-compatible.) Tj
+0 -16 Td
+/F1 12 Tf
+(- GPU size must fit the case.) Tj
+0 -16 Td
+/F1 12 Tf
+(- PSU connectors must support the motherboard and GPU.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Cooling must match the CPU socket and case clearance.) Tj
+0 -16 Td
+/F1 12 Tf
+(- Storage choice depends on speed, price, and capacity goals.) Tj
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000133 00000 n 
+0000000260 00000 n 
+0000001495 00000 n 
+0000001622 00000 n 
+0000002668 00000 n 
+0000002795 00000 n 
+0000003931 00000 n 
+0000004059 00000 n 
+0000005390 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+5461
+%%EOF
