@@ -3,24 +3,9 @@
 type Database = {
   public: {
     Tables: {
-      profiles: {
-        Row: {
-          id: string;
-          email: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id: string;
-          email?: string | null;
-        };
-        Update: {
-          email?: string | null;
-        };
-      };
       pdf_documents: {
         Row: {
           id: string;
-          user_id: string;
           file_name: string;
           content_hash: string;
           extracted_text: string | null;
@@ -29,7 +14,6 @@ type Database = {
           updated_at: string;
         };
         Insert: {
-          user_id: string;
           file_name: string;
           content_hash: string;
           extracted_text?: string | null;
@@ -45,7 +29,6 @@ type Database = {
       study_artifacts: {
         Row: {
           id: string;
-          user_id: string;
           document_id: string;
           artifact_type: string;
           payload: Record<string, unknown>;
@@ -53,7 +36,6 @@ type Database = {
           updated_at: string;
         };
         Insert: {
-          user_id: string;
           document_id: string;
           artifact_type: string;
           payload: Record<string, unknown>;
@@ -66,7 +48,6 @@ type Database = {
       quiz_attempts: {
         Row: {
           id: string;
-          user_id: string;
           document_id: string | null;
           question_count: number;
           score: number;
@@ -75,7 +56,6 @@ type Database = {
           created_at: string;
         };
         Insert: {
-          user_id: string;
           document_id?: string | null;
           question_count: number;
           score: number;
@@ -106,14 +86,7 @@ export function getSupabaseBrowserClient() {
   if (!browserClient) {
     browserClient = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true
-        }
-      }
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
   }
 

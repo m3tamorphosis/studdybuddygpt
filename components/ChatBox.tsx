@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { PdfUploader } from "@/components/PdfUploader";
 
@@ -53,7 +53,7 @@ export function ChatBox({ showUploader = true }: ChatBoxProps) {
             ) : null}
           </div>
 
-          <aside className="workspace-tools-wrap -mt-48 self-start xl:sticky xl:top-6 xl:-mt-48 xl:flex xl:justify-center">
+          <aside className="workspace-tools-wrap -mt-56 self-start xl:sticky xl:top-6 xl:-mt-56 xl:flex xl:justify-center">
             <div className="workspace-tools-panel">
               <p className="text-center text-base font-semibold uppercase tracking-[0.32em] text-[color:var(--text-main)]/80">
                 Included Tools
@@ -82,6 +82,7 @@ export function ChatBox({ showUploader = true }: ChatBoxProps) {
     </section>
   );
 }
+
 
 
 

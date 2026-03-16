@@ -155,6 +155,27 @@ export function savePdfSession(text: string, fileName: string, previewUrl = "", 
   setSessionItemSafe(RECENT_PDF_PAYLOADS_KEY, JSON.stringify(nextPayloads));
 }
 
+export function removeRecentPdfSession(id: string) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const nextMeta = getRecentPdfMeta().filter((item) => item.id !== id);
+  const nextPayloads = getRecentPdfPayloads().filter((item) => item.id !== id);
+
+  if (nextMeta.length) {
+    setLocalItemSafe(RECENT_PDFS_KEY, JSON.stringify(nextMeta));
+  } else {
+    localStorage.removeItem(RECENT_PDFS_KEY);
+  }
+
+  if (nextPayloads.length) {
+    setSessionItemSafe(RECENT_PDF_PAYLOADS_KEY, JSON.stringify(nextPayloads));
+  } else {
+    sessionStorage.removeItem(RECENT_PDF_PAYLOADS_KEY);
+  }
+}
+
 export function savePdfDocument(document: StoredPdfDocument | null) {
   if (typeof window === "undefined") {
     return;

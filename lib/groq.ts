@@ -1,4 +1,4 @@
-type GroqMessage = {
+﻿type GroqMessage = {
   role: "system" | "user" | "assistant";
   content: string;
 };
@@ -373,54 +373,82 @@ function stripListMarker(value: string) {
 
 export function parseQuizResponse(raw: string): QuizQuestion[] {
   try {
-    const parsed = extractJson<{ questions?: QuizQuestion[] }>(raw);
+    const parsedObject = extractJson<{ questions?: QuizQuestion[] }>(raw);
 
-    if (Array.isArray(parsed.questions) && parsed.questions.length > 0) {
-      return parsed.questions;
+    if (Array.isArray(parsedObject.questions) && parsedObject.questions.length > 0) {
+      return parsedObject.questions;
+    }
+  } catch {
+    // Fall through to more tolerant recovery.
+  }
+
+  try {
+    const parsedArray = extractJson<QuizQuestion[]>(raw);
+
+    if (Array.isArray(parsedArray) && parsedArray.length > 0) {
+      return parsedArray;
     }
   } catch {
     // Fall through to plain-text recovery.
   }
 
-  const sections = raw
-    .split(/(?:^|\n)\s*(?:question\s*\d+|\d+[.)])\s*[:.-]?/i)
-    .map((section) => section.trim())
-    .filter(Boolean);
+  const normalized = raw.replace(/\r/g, "").trim();
+  const blockMatches = Array.from(
+    normalized.matchAll(/(?:^|\n)\s*(?:question\s*\d+|\d+[.)])\s*[:.-]?\s*([\s\S]*?)(?=(?:\n\s*(?:question\s*\d+|\d+[.)])\s*[:.-]?)|$)/gi)
+  );
 
-  const recovered = sections
-    .map((section) => {
-      const lines = section
+  const recovered = blockMatches
+    .map((match) => match[1]?.trim() ?? "")
+    .filter(Boolean)
+    .map((block) => {
+      const lines = block
         .split(/\n+/)
         .map((line) => line.trim())
         .filter(Boolean);
 
-      if (lines.length < 3) {
+      if (lines.length === 0) {
         return null;
       }
 
-      const question = stripListMarker(lines[0]);
-      const answerLineIndex = lines.findIndex((line) => /^answer\s*:/i.test(line));
+      const questionLine = lines[0].replace(/^question\s*[:.-]?\s*/i, "").trim();
+      const answerLine = lines.find((line) => /^answer\s*:/i.test(line));
       const explanationLineIndex = lines.findIndex((line) => /^explanation\s*:/i.test(line));
-      const optionLines = lines.slice(1, answerLineIndex > 0 ? answerLineIndex : lines.length)
-        .map((line) => stripListMarker(line))
+
+      const optionLines = lines
+        .slice(1)
+        .filter((line) => !/^answer\s*:/i.test(line) && !/^explanation\s*:/i.test(line))
+        .flatMap((line) => {
+          const inlineOptionMatches = Array.from(line.matchAll(/(?:^|\s)([A-D])[.)]\s*([^A-D].*?)(?=(?:\s+[A-D][.)]\s)|$)/g));
+
+          if (inlineOptionMatches.length > 0) {
+            return inlineOptionMatches.map((optionMatch) => optionMatch[2].trim()).filter(Boolean);
+          }
+
+          return [stripListMarker(line)];
+        })
         .filter(Boolean)
         .slice(0, 4);
-      const answer = answerLineIndex >= 0
-        ? lines[answerLineIndex].replace(/^answer\s*:/i, "").trim()
-        : "";
+
+      let answer = answerLine ? answerLine.replace(/^answer\s*:/i, "").trim() : "";
+
+      if (/^[A-D]$/i.test(answer)) {
+        const answerIndex = answer.toUpperCase().charCodeAt(0) - 65;
+        answer = optionLines[answerIndex] ?? answer;
+      }
+
       const explanation = explanationLineIndex >= 0
         ? lines.slice(explanationLineIndex).join(" ").replace(/^explanation\s*:/i, "").trim()
-        : "";
+        : "No explanation was returned.";
 
-      if (!question || optionLines.length < 2 || !answer) {
+      if (!questionLine || optionLines.length < 2 || !answer) {
         return null;
       }
 
       return {
-        question,
+        question: questionLine,
         options: optionLines,
         answer,
-        explanation: explanation || "No explanation was returned."
+        explanation
       } satisfies QuizQuestion;
     })
     .filter((item): item is QuizQuestion => Boolean(item));
@@ -469,6 +497,7 @@ export function parseFlashcardResponse(raw: string): FlashcardItem[] {
 
   throw new Error("The AI returned malformed JSON. Flashcard content could not be recovered.");
 }
+
 
 
 

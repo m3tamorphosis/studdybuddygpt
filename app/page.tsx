@@ -1,5 +1,4 @@
-﻿import { AuthPanel } from "@/components/auth/AuthPanel";
-import { ChatBox } from "@/components/ChatBox";
+﻿import { ChatBox } from "@/components/ChatBox";
 
 export default function HomePage() {
   return (
@@ -10,19 +9,16 @@ export default function HomePage() {
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-ocean">
               StudyBuddyGPT
             </p>
-            <h1 className="display-title mt-4 max-w-3xl text-[2.8rem] font-semibold leading-[0.96] sm:text-[3.5rem] xl:text-[4.2rem]">
+            <h1 className="display-title mt-5 max-w-3xl text-[2.8rem] font-semibold leading-[0.96] sm:text-[3.5rem] xl:text-[4.2rem]">
               Study from your PDF with quizzes, flashcards, key terms, and notes.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-8 text-[color:var(--text-muted)] sm:text-[1.05rem]">
-              Upload your notes once, then use StudyBuddyGPT to summarize, explain, quiz, extract
-              key terms, and build study notes from the same material.
+              Upload your notes once, then use StudyBuddyGPT to summarize, explain, quiz, extract key terms, and build study notes from the same material.
             </p>
           </div>
 
           <div className="study-flow-panel rounded-[1.8rem] p-5 backdrop-blur-sm">
-            <p className="eyebrow-label text-xs font-semibold uppercase text-ocean">
-              Study Flow
-            </p>
+            <p className="eyebrow-label text-xs font-semibold uppercase text-ocean">Study Flow</p>
             <div className="mt-5 grid gap-3">
               <div className="study-flow-card">
                 <div className="flex items-start gap-4">
@@ -67,8 +63,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      <AuthPanel />
 
       <ChatBox />
     </main>

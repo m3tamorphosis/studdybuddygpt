@@ -1,13 +1,10 @@
 ﻿"use client";
 
-import type { User } from "@supabase/supabase-js";
-
 import { getSupabaseBrowserClient, getSupabaseStorageBucket } from "@/lib/supabase/client";
 import type { FlashcardItem, QuizQuestion, TutorResponse } from "@/lib/groq";
 
 export type StoredPdfDocument = {
   id: string;
-  userId: string;
   fileName: string;
   contentHash: string;
   storagePath: string | null;
@@ -36,31 +33,14 @@ async function sha256(value: string) {
     .join("");
 }
 
-export async function ensureProfile(user: User) {
-  const supabase = getSupabaseBrowserClient();
-  const db = supabase as any;
-
-  if (!supabase) {
-    return;
-  }
-
-  await db.from("profiles").upsert(
-    {
-      id: user.id,
-      email: user.email ?? null
-    },
-    { onConflict: "id" }
-  );
-}
-
-export async function uploadPdfToStorage(user: User, file: File, contentHash: string) {
+export async function uploadPdfToStorage(file: File, contentHash: string) {
   const supabase = getSupabaseBrowserClient();
 
   if (!supabase) {
     return null;
   }
 
-  const storagePath = `${user.id}/${contentHash}-${sanitizeFileName(file.name)}`;
+  const storagePath = `${contentHash}-${sanitizeFileName(file.name)}`;
   const { error } = await supabase.storage.from(getSupabaseStorageBucket()).upload(storagePath, file, {
     upsert: true,
     contentType: file.type || "application/pdf"
@@ -74,7 +54,6 @@ export async function uploadPdfToStorage(user: User, file: File, contentHash: st
 }
 
 export async function ensurePdfDocument(params: {
-  user: User;
   fileName: string;
   text: string;
   file?: File;
@@ -86,22 +65,19 @@ export async function ensurePdfDocument(params: {
     return null;
   }
 
-  const { user, fileName, text, file } = params;
-  await ensureProfile(user);
-
+  const { fileName, text, file } = params;
   const contentHash = await sha256(text);
   let storagePath: string | null = null;
 
   const { data: existing } = await db
     .from("pdf_documents")
-    .select("id, user_id, file_name, content_hash, storage_path")
-    .eq("user_id", user.id)
+    .select("id, file_name, content_hash, storage_path")
     .eq("content_hash", contentHash)
     .maybeSingle();
 
   if (file) {
     try {
-      storagePath = await uploadPdfToStorage(user, file, contentHash);
+      storagePath = await uploadPdfToStorage(file, contentHash);
     } catch {
       storagePath = existing?.storage_path ?? null;
     }
@@ -113,15 +89,14 @@ export async function ensurePdfDocument(params: {
     .from("pdf_documents")
     .upsert(
       {
-        user_id: user.id,
         file_name: fileName,
         content_hash: contentHash,
         extracted_text: text,
         storage_path: storagePath
       },
-      { onConflict: "user_id,content_hash" }
+      { onConflict: "content_hash" }
     )
-    .select("id, user_id, file_name, content_hash, storage_path")
+    .select("id, file_name, content_hash, storage_path")
     .single();
 
   if (error) {
@@ -130,7 +105,6 @@ export async function ensurePdfDocument(params: {
 
   return {
     id: data.id,
-    userId: data.user_id,
     fileName: data.file_name,
     contentHash: data.content_hash,
     storagePath: data.storage_path
@@ -138,7 +112,6 @@ export async function ensurePdfDocument(params: {
 }
 
 export async function saveStudyArtifact(params: {
-  userId: string;
   documentId: string;
   artifactType: StudyArtifactType;
   payload: Record<string, unknown>;
@@ -152,12 +125,11 @@ export async function saveStudyArtifact(params: {
 
   const { error } = await db.from("study_artifacts").upsert(
     {
-      user_id: params.userId,
       document_id: params.documentId,
       artifact_type: params.artifactType,
       payload: params.payload
     },
-    { onConflict: "user_id,document_id,artifact_type" }
+    { onConflict: "document_id,artifact_type" }
   );
 
   if (error) {
@@ -165,7 +137,7 @@ export async function saveStudyArtifact(params: {
   }
 }
 
-export async function loadStudyArtifacts(params: { userId: string; documentId: string }) {
+export async function loadStudyArtifacts(params: { documentId: string }) {
   const supabase = getSupabaseBrowserClient();
   const db = supabase as any;
 
@@ -176,7 +148,6 @@ export async function loadStudyArtifacts(params: { userId: string; documentId: s
   const { data, error } = await db
     .from("study_artifacts")
     .select("artifact_type, payload")
-    .eq("user_id", params.userId)
     .eq("document_id", params.documentId);
 
   if (error || !data) {
@@ -215,7 +186,6 @@ export async function loadStudyArtifacts(params: { userId: string; documentId: s
 }
 
 export async function saveQuizAttempt(params: {
-  userId: string;
   documentId: string | null;
   questionCount: number;
   score: number;
@@ -230,7 +200,6 @@ export async function saveQuizAttempt(params: {
   }
 
   const { error } = await db.from("quiz_attempts").insert({
-    user_id: params.userId,
     document_id: params.documentId,
     question_count: params.questionCount,
     score: params.score,

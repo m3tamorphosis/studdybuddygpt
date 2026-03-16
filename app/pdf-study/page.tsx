@@ -1,8 +1,7 @@
-﻿"use client";
+"use client";
 
 import { FormEvent, ReactNode, useEffect, useState } from "react";
 
-import { useAuth } from "@/components/auth/AuthProvider";
 import { Flashcard } from "@/components/Flashcard";
 import { QuizCard } from "@/components/QuizCard";
 import { parseApiResponse } from "@/lib/api";
@@ -31,7 +30,7 @@ function renderKeyTermLine(line: string) {
     return null;
   }
 
-  const parts = trimmed.match(/^([^:.-]{1,80})(\s*(?:-|:|–)\s*)(.+)$/);
+  const parts = trimmed.match(/^([^:.-]{1,80})(\s*(?:-|:|ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“)\s*)(.+)$/);
 
   if (!parts) {
     return <span className="font-semibold text-[color:var(--text-main)]">{trimmed}</span>;
@@ -67,8 +66,8 @@ function buildDisplayLines(text: string, mode: ActiveView) {
     }
 
     const bulletLines = normalized
-      .split(/(?=\s*[•●▪]\s+)/)
-      .map((line) => line.replace(/^[•●▪]\s*/, "").trim())
+      .split(/(?=\s*[ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â‚¬â€Ã‚ÂÃƒÂ¢Ã¢â‚¬â€œÃ‚Âª]\s+)/)
+      .map((line) => line.replace(/^[ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â‚¬â€Ã‚ÂÃƒÂ¢Ã¢â‚¬â€œÃ‚Âª]\s*/, "").trim())
       .filter(Boolean);
 
     if (bulletLines.length > 1) {
@@ -104,7 +103,7 @@ function renderStudyLine(line: string) {
     return null;
   }
 
-  const termMatch = trimmed.match(/^([^:.-]{1,80})(\s*(?:-|:|–)\s*)(.+)$/);
+  const termMatch = trimmed.match(/^([^:.-]{1,80})(\s*(?:-|:|ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“)\s*)(.+)$/);
 
   if (termMatch) {
     return (
@@ -156,7 +155,6 @@ function renderResponseContent(
 }
 export default function PdfStudyPage() {
   const [questionCount, setQuestionCount] = useState<10 | 15>(10);
-  const { user } = useAuth();
   const [document, setDocument] = useState<StoredPdfDocument | null>(null);
   const [remoteLoadedForDocument, setRemoteLoadedForDocument] = useState<string | null>(null);
   const [flashcardCount, setFlashcardCount] = useState<10 | 15>(10);
@@ -225,13 +223,13 @@ export default function PdfStudyPage() {
   useEffect(() => {
     let active = true;
 
-    if (!user || !sourceText.trim() || !fileName || (document && document.userId === user.id)) {
+    if (!sourceText.trim() || !fileName || document) {
       return () => {
         active = false;
       };
     }
 
-    ensurePdfDocument({ user, fileName, text: sourceText })
+    ensurePdfDocument({ fileName, text: sourceText })
       .then((persistedDocument) => {
         if (!active || !persistedDocument) {
           return;
@@ -245,18 +243,18 @@ export default function PdfStudyPage() {
     return () => {
       active = false;
     };
-  }, [user, sourceText, fileName, document]);
+  }, [sourceText, fileName, document]);
 
   useEffect(() => {
     let active = true;
 
-    if (!user || !document?.id || remoteLoadedForDocument === document.id) {
+    if (!document?.id || remoteLoadedForDocument === document.id) {
       return () => {
         active = false;
       };
     }
 
-    loadStudyArtifacts({ userId: user.id, documentId: document.id })
+    loadStudyArtifacts({ documentId: document.id })
       .then((artifacts) => {
         if (!active) {
           return;
@@ -289,20 +287,37 @@ export default function PdfStudyPage() {
     return () => {
       active = false;
     };
-  }, [user, document, remoteLoadedForDocument]);
+  }, [document, remoteLoadedForDocument]);
 
+  async function getOrCreateDocument() {
+    if (document?.id) {
+      return document;
+    }
+    if (!sourceText.trim() || !fileName) {
+      return null;
+    }
+    try {
+      const persistedDocument = await ensurePdfDocument({ fileName, text: sourceText });
+      if (persistedDocument) {
+        setDocument(persistedDocument);
+        savePdfDocument(persistedDocument);
+      }
+      return persistedDocument;
+    } catch {
+      return null;
+    }
+  }
   async function persistArtifact(
     artifactType: "summary" | "key_terms" | "study_notes" | "flashcards" | "quiz" | "ask",
     payload: Record<string, unknown>
   ) {
-    if (!user || !document?.id) {
+    const persistedDocument = await getOrCreateDocument();
+    if (!persistedDocument?.id) {
       return;
     }
-
     try {
       await saveStudyArtifact({
-        userId: user.id,
-        documentId: document.id,
+        documentId: persistedDocument.id,
         artifactType,
         payload
       });
@@ -310,8 +325,6 @@ export default function PdfStudyPage() {
       // Keep the local study flow working even if the remote save fails.
     }
   }
-
-
   function updateStoredResults(next: {
     quiz?: QuizQuestion[];
     flashcards?: FlashcardItem[];
@@ -350,21 +363,20 @@ export default function PdfStudyPage() {
 
   function handleSubmitQuiz() {
     setQuizSubmitted(true);
-
-    if (!user) {
-      return;
-    }
-
-    void saveQuizAttempt({
-      userId: user.id,
-      documentId: document?.id ?? null,
-      questionCount,
-      score: quizScore,
-      totalQuestions: quiz.length,
-      answers: answers as Record<string, unknown>
-    });
+    void (async () => {
+      const persistedDocument = await getOrCreateDocument();
+      if (!persistedDocument?.id) {
+        return;
+      }
+      await saveQuizAttempt({
+        documentId: persistedDocument.id,
+        questionCount,
+        score: quizScore,
+        totalQuestions: quiz.length,
+        answers: answers as Record<string, unknown>
+      });
+    })();
   }
-
   async function generateQuiz() {
     setShowQuizCountPicker(true);
   }
@@ -398,6 +410,7 @@ export default function PdfStudyPage() {
       const nextQuiz = data.questions ?? [];
       setQuiz(nextQuiz);
       updateStoredResults({ quiz: nextQuiz, activeView: "quiz" });
+      await persistArtifact("quiz", { questions: nextQuiz });
       setAnswers({});
       setQuizSubmitted(false);
       setRetakeKey((current) => current + 1);
@@ -442,6 +455,7 @@ export default function PdfStudyPage() {
       const nextCards = data.cards ?? [];
       setCards(nextCards);
       updateStoredResults({ flashcards: nextCards, activeView: "flashcards" });
+      await persistArtifact("flashcards", { cards: nextCards });
       setActiveView("flashcards");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create flashcards.");
@@ -489,6 +503,7 @@ export default function PdfStudyPage() {
       setTutorResponse(data);
       setSummaryResponse(data);
       updateStoredResults({ summary: data, activeView: "summary" });
+      await persistArtifact("summary", data as unknown as Record<string, unknown>);
       setActiveView("summary");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to summarize PDF.");
@@ -536,6 +551,7 @@ export default function PdfStudyPage() {
       setTutorResponse(data);
       setKeyTermsResponse(data);
       updateStoredResults({ keyTerms: data, activeView: "key-terms" });
+      await persistArtifact("key_terms", data as unknown as Record<string, unknown>);
       setActiveView("key-terms");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to extract key terms.");
@@ -583,6 +599,7 @@ export default function PdfStudyPage() {
       setTutorResponse(data);
       setStudyNotesResponse(data);
       updateStoredResults({ studyNotes: data, activeView: "study-notes" });
+      await persistArtifact("study_notes", data as unknown as Record<string, unknown>);
       setActiveView("study-notes");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate study notes.");
@@ -628,6 +645,7 @@ export default function PdfStudyPage() {
 
       setTutorResponse(data);
       updateStoredResults({ ask: data, activeView: "ask" });
+      await persistArtifact("ask", data as unknown as Record<string, unknown>);
       setActiveView("ask");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to search this PDF.");
@@ -983,6 +1001,14 @@ export default function PdfStudyPage() {
     </main>
   );
 }
+
+
+
+
+
+
+
+
 
 
 

@@ -240,26 +240,48 @@ article:hover {
 }
 
 .study-flow-card {
-  border: 1px solid var(--panel-border);
-  background: var(--font-surface-strong);
-  border-radius: 1.35rem;
-  padding: 0.95rem;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
+    border: 1px solid var(--panel-border);
+    background: var(--font-surface-strong);
+    border-radius: 1.35rem;
+    padding: 0.95rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease, background-color 220ms ease;
+    will-change: transform;
+  }
+
+  .study-flow-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(43, 210, 255, 0.38);
+    box-shadow: 0 16px 34px rgba(8, 16, 42, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
 
 .study-flow-index {
-  margin-top: 0.25rem;
-  display: inline-flex;
-  height: 2.5rem;
-  width: 2.5rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgba(43, 210, 255, 0.14);
-  color: #2bd2ff;
-  font-size: 0.92rem;
-  font-weight: 700;
-}
+    margin-top: 0.15rem;
+    display: inline-flex;
+    width: 3.2rem;
+    height: 3.2rem;
+    min-width: 3.2rem;
+    min-height: 3.2rem;
+    aspect-ratio: 1 / 1;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    line-height: 1;
+    padding: 0;
+    background: rgba(43, 210, 255, 0.22);
+    color: #2bd2ff;
+    font-size: 1.08rem;
+    font-weight: 700;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    transition: transform 220ms ease, background-color 220ms ease, box-shadow 220ms ease;
+  }
+
+  .study-flow-card:hover .study-flow-index {
+    transform: translateY(-1px) scale(1.04);
+    background: rgba(43, 210, 255, 0.28);
+    box-shadow: 0 10px 20px rgba(43, 210, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
 
 .workspace-panel {
   background:
@@ -332,18 +354,22 @@ article:hover {
 
 .workspace-tool-index {
   display: inline-flex;
-  width: 2.9rem;
-  height: 2.9rem;
+  width: 3rem;
+  height: 3rem;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--panel-border) 34%, white 66%);
-  color: color-mix(in srgb, var(--text-main) 78%, white 22%);
-  font-size: 1rem;
+  background: rgba(43, 210, 255, 0.22);
+  color: #2bd2ff;
+  font-size: 1.02rem;
   font-weight: 700;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
+
+
+
+
 
 
 

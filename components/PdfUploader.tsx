@@ -1,12 +1,12 @@
-﻿"use client";
+"use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { useAuth } from "@/components/auth/AuthProvider";
 import { parseApiResponse } from "@/lib/api";
 import {
   getRecentPdfSessions,
+  removeRecentPdfSession,
   type RecentPdfItem,
   restorePdfSession,
   savePdfSession
@@ -22,10 +22,6 @@ type PdfUploaderProps = {
   summarizing?: boolean;
 };
 
-const RECOMMENDED_MIN_MB = 5;
-const RECOMMENDED_MAX_MB = 15;
-const ABSOLUTE_WARNING_MB = 20;
-
 export function PdfUploader({
   onTextExtracted,
   redirectTo,
@@ -39,7 +35,6 @@ export function PdfUploader({
   const [error, setError] = useState<string | null>(null);
   const [recentFiles, setRecentFiles] = useState<RecentPdfItem[]>([]);
   const router = useRouter();
-  const { user } = useAuth();
 
   useEffect(() => {
     setRecentFiles(getRecentPdfSessions());
@@ -56,24 +51,6 @@ export function PdfUploader({
       reader.onerror = () => resolve("");
       reader.readAsDataURL(file);
     });
-  }
-
-  function getFileAdvice(file: File) {
-    const sizeMb = file.size / (1024 * 1024);
-
-    if (sizeMb > ABSOLUTE_WARNING_MB) {
-      return "This PDF is quite large. Best results usually come from mostly text-based PDFs around 5 MB to 15 MB.";
-    }
-
-    if (sizeMb < RECOMMENDED_MIN_MB) {
-      return "This PDF is under 5 MB, which is usually fine if it is mostly text-based.";
-    }
-
-    if (sizeMb <= RECOMMENDED_MAX_MB) {
-      return "Recommended range: this PDF is within the 5 MB to 15 MB sweet spot for best results.";
-    }
-
-    return "This PDF is above the recommended 15 MB size. It can still work, but smaller text-based PDFs usually perform better.";
   }
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -101,7 +78,7 @@ export function PdfUploader({
         body: formData
       });
 
-      const data = await parseApiResponse<{ error?: string; text?: string; warning?: string }>(response);
+      const data = await parseApiResponse<{ error?: string; text?: string }>(response);
 
       if (!response.ok) {
         throw new Error(data.error ?? "Failed to process the PDF.");
@@ -113,17 +90,14 @@ export function PdfUploader({
 
       let persistedDocument = null;
 
-      if (user) {
-        try {
-          persistedDocument = await ensurePdfDocument({
-            user,
-            fileName: file.name,
-            text: data.text,
-            file
-          });
-        } catch {
-          persistedDocument = null;
-        }
+      try {
+        persistedDocument = await ensurePdfDocument({
+          fileName: file.name,
+          text: data.text,
+          file
+        });
+      } catch {
+        persistedDocument = null;
       }
 
       setFileName(file.name);
@@ -151,6 +125,13 @@ export function PdfUploader({
     if (redirectTo) {
       router.push(redirectTo);
     }
+  }
+
+  function handleRemoveRecent(event: MouseEvent<HTMLButtonElement>, id: string) {
+    event.preventDefault();
+    event.stopPropagation();
+    removeRecentPdfSession(id);
+    setRecentFiles(getRecentPdfSessions());
   }
 
   return (
@@ -230,14 +211,26 @@ export function PdfUploader({
 
           <div className="mt-3 flex flex-wrap gap-2">
             {recentFiles.map((item) => (
-              <button
+              <div
                 key={`${item.fileName}-${item.savedAt}`}
-                className="secondary-button px-4 py-2 text-sm"
-                onClick={() => handleOpenRecent(item)}
-                type="button"
+                className="secondary-button flex items-center gap-2 px-4 py-2 text-sm"
               >
-                {item.fileName}
-              </button>
+                <button
+                  className="min-w-0 truncate text-left"
+                  onClick={() => handleOpenRecent(item)}
+                  type="button"
+                >
+                  {item.fileName}
+                </button>
+                <button
+                  aria-label={`Remove ${item.fileName}`}
+                  className="inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[color:var(--field-border)] text-xs text-[color:var(--text-muted)] transition hover:bg-[color:var(--secondary-bg)] hover:text-[color:var(--text-main)]"
+                  onClick={(event) => handleRemoveRecent(event, item.id)}
+                  type="button"
+                >
+                  x
+                </button>
+              </div>
             ))}
           </div>
         </div>
